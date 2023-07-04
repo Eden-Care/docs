@@ -1,0 +1,346 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API Documentations and references for Eden Care Applications",
+        "version": "v2.0",
+        "title": "Employers Management",
+        "termsOfService": "https://edencaremedical.com/terms",
+        "contact": {
+            "name": "Eden Care (Africa)",
+            "url": "https://edencaremedical.com",
+            "email": "info@edencaremedical.com"
+        },
+        "license": {
+            "name": "Eden Care",
+            "url": "https://edencaremedical.com/license-note"
+        }
+    },
+    "host": "service.edencaremedical.com",
+    "tags": [
+        {
+            "name": "Employers",
+            "description": "Employer Endpoints"
+        }
+    ],
+    "paths": {
+        "/dev/api/v2/employers/profile": {
+            "post": {
+                "tags": [
+                    "Employers"
+                ],
+                "summary": "Create New Employer Profile",
+                "description": "This API is used to onboard a new employer into the system. It expects an EmployerProfileRequest object in the request body, containing necessary information about the employer such as name, country of registration, industry, physical address, contact information, etc. The API validates the provided information, creates an employer profile. It handles invalid inputs by returning a BadRequest response, and other server errors by returning an InternalServerError response.",
+                "operationId": "createEmployerProfileUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "profileRequest",
+                        "description": "profileRequest",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/EmployerProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "/dev/api/v2/employers/{employerAccountId}/onboarding-documents": {
+            "post": {
+                "tags": [
+                    "Employers"
+                ],
+                "summary": "Upload Employer Onboarding Documents",
+                "description": "This API is used to upload various onboarding documents for a specific employer account. It accepts multipart file uploads for several types of documents including registration certificate, contract, organisation logo, and any other miscellaneous documents. Not all documents are required to be uploaded at once - you can provide as many or as few as necessary in each request. The API validates the provided files and saves them associated with the employer's account.",
+                "operationId": "uploadOnboardingDocumentsUsingPOST",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "registration_certificate",
+                        "in": "formData",
+                        "required": false,
+                        "type": "file"
+                    },
+                    {
+                        "name": "contract",
+                        "in": "formData",
+                        "required": false,
+                        "type": "file"
+                    },
+                    {
+                        "name": "logo",
+                        "in": "formData",
+                        "required": false,
+                        "type": "file"
+                    },
+                    {
+                        "name": "misc",
+                        "in": "formData",
+                        "required": false,
+                        "type": "file"
+                    },
+                    {
+                        "name": "employerAccountId",
+                        "in": "path",
+                        "description": "Employer account Id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "/dev/api/v2/employers/{employerAccountId}/subscriptions": {
+            "post": {
+                "tags": [
+                    "Employers"
+                ],
+                "summary": "Create Subscriptions for an Employer",
+                "description": "This API is used to create or add new product subscriptions for an existing employer. It expects the employer account ID as a path variable and a list of ProductSubscription objects in the request body. Each ProductSubscription object should include the product details and the corresponding plan details. The API validates the provided details and adds the subscriptions to the employer's account.",
+                "operationId": "createEmployerSubscriptionsUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "employerAccountId",
+                        "in": "path",
+                        "description": "Employer Account Id obtained during profile creation.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "in": "body",
+                        "name": "subscriptions",
+                        "description": "subscriptions",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ProductSubscription"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "EmployerProfileRequest": {
+            "type": "object",
+            "required": [
+                "contact_information",
+                "country_of_registration",
+                "industry",
+                "name",
+                "physical_address"
+            ],
+            "properties": {
+                "contact_information": {
+                    "description": "Contact information",
+                    "$ref": "#/definitions/ContactInformation"
+                },
+                "country_of_registration": {
+                    "type": "string",
+                    "description": "Country of registration"
+                },
+                "industry": {
+                    "type": "string",
+                    "description": "Industry"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Business name"
+                },
+                "physical_address": {
+                    "description": "Physical address",
+                    "$ref": "#/definitions/PhysicalAddress"
+                },
+                "remarks": {
+                    "type": "string",
+                    "description": "Remarks?"
+                }
+            },
+            "title": "EmployerProfileRequest"
+        },
+        "ContactInformation": {
+            "type": "object",
+            "required": [
+                "first_name",
+                "last_name"
+            ],
+            "properties": {
+                "contact_number": {
+                    "description": "Contact number",
+                    "$ref": "#/definitions/Contact_Number"
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Email"
+                },
+                "first_name": {
+                    "type": "string",
+                    "description": "First name"
+                },
+                "last_name": {
+                    "type": "string",
+                    "description": "Last name"
+                },
+                "middle_name": {
+                    "type": "string",
+                    "description": "Middle name"
+                }
+            },
+            "title": "ContactInformation"
+        },
+        "Contact_Number": {
+            "type": "object",
+            "required": [
+                "country_code",
+                "number"
+            ],
+            "properties": {
+                "country_code": {
+                    "type": "string",
+                    "description": "Country code"
+                },
+                "number": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "Number"
+                }
+            },
+            "title": "Contact_Number"
+        },
+        "PhysicalAddress": {
+            "type": "object",
+            "required": [
+                "city",
+                "country",
+                "street"
+            ],
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "description": "City"
+                },
+                "country": {
+                    "type": "string",
+                    "description": "Country"
+                },
+                "district": {
+                    "type": "string",
+                    "description": "District"
+                },
+                "province": {
+                    "type": "string",
+                    "description": "Province"
+                },
+                "street": {
+                    "type": "string",
+                    "description": "Street address"
+                },
+                "zip": {
+                    "type": "string",
+                    "description": "Zip"
+                }
+            },
+            "title": "PhysicalAddress"
+        },
+        "ProductSubscription": {
+            "type": "object",
+            "required": [
+                "end_date",
+                "plans",
+                "product",
+                "start_date"
+            ],
+            "properties": {
+                "end_date": {
+                    "type": "string",
+                    "description": "End date (yyyy-mm-dd)"
+                },
+                "plans": {
+                    "type": "array",
+                    "description": "Plans",
+                    "items": {
+                        "$ref": "#/definitions/ProductPlan"
+                    }
+                },
+                "product": {
+                    "type": "string",
+                    "description": "Product subscribed",
+                    "enum": [
+                        "Insurance",
+                        "Proactive",
+                        "Unknown"
+                    ]
+                },
+                "start_date": {
+                    "type": "string",
+                    "description": "Start date (yyyy-mm-dd)"
+                }
+            },
+            "title": "ProductSubscription"
+        },
+        "ProductPlan": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "cover_type": {
+                    "type": "string",
+                    "description": "Type of cover (Managed or Fund); not required for Proactive product",
+                    "enum": [
+                        "Fund",
+                        "Managed"
+                    ]
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Plan name"
+                }
+            },
+            "title": "ProductPlan"
+        }
+    }
+}
